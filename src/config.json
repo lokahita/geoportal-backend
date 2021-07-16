@@ -1,0 +1,6 @@
+{
+    "base_domain": "http://localhost:3000/geoportal/backend",
+    "base_geoportal": "http://localhost/geoportal/",
+    "api_domain": "http://localhost:8004/geoportal/api",
+    "proxy_domain": "http://103.56.148.38/magic/service.php/"
+}
