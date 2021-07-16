@@ -40,7 +40,7 @@ export default function TopMenu(props) {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="mr-auto">
-                                <Nav.Link href={Config.base_geoportal} target="_blank" className="px-3 mx-2">Geoportal FTA</Nav.Link>
+                                <Nav.Link href={Config.base_geoportal} className="px-3 mx-2">Geoportal FTA</Nav.Link>
                                 <Nav.Link href="#/" className="px-3 mx-2 active">Backend</Nav.Link>
                             </Nav>
                         </Navbar.Collapse>
