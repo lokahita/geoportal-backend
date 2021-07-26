@@ -11,37 +11,34 @@ import image_loader from './loading.gif';
 import Config from './config.json';
 
 
-export default function Metadata(props) {
+export default function Keywords(props) {
     const [loading, setloading] = useState(true);
     const  token = localStorage.getItem('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
-    const url_list = Config.api_domain + "/metadata/";
-    const url_insert = Config.api_domain + "/metadata/";
-    const url_update = Config.api_domain + "/metadata/update/";
-    const url_delete = Config.api_domain + "/metadata/delete/";
+    const url_list = Config.api_domain + "/keywords/";
+    const url_insert = Config.api_domain + "/keywords/";
+    const url_update = Config.api_domain + "/keywords/update/";
+    const url_delete = Config.api_domain + "/keywords/delete/";
     
     const [isFormVisible, setFormVisible] = useState(false);
     const [modeUsulan, setModeUsulan] = useState("tambah");
-    const [tombolUsulan, setTombolUsulan] = useState("Submit");    
+    const [tombolUsulan, setTombolUsulan] = useState("Save");    
     
     const [id, setId] = useState(0);
     const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
     const [items, setItems] = useState();
-    const [labelMetadata, setLabelMetadata] = useState("Upload metadata file");
     
     const [alert, setAlert] = useState("d-none");
     const [error, setError] = useState("d-none");
 
     const status = isFormVisible ? 'main-card mt-3 d-block' : 'd-none';
     const tabel = !isFormVisible ? 'main-card d-block' : 'd-none';
-          
 
    
     function validateForm() {
         //console.log(wilayahId)
-        return name.length > 0 && address.length > 0;
+        return name.length > 0;
     }
 
       
@@ -53,17 +50,17 @@ export default function Metadata(props) {
             
                return items.map((row, index)=>{
                 //console.log(row.id, index)
-                var status = 'Approved by admin'
-                return <tr key={index}><td>{index+1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                // 
+                return <tr key={index}><td>{index+1}</td><td>{row.name}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                 })
                }else{
-                return <tr><td colSpan={4}>No data found</td></tr>                   
+                return <tr><td colSpan={3}>No data found</td></tr>                   
                }
           }else{
-            return <tr><td colSpan={4}>No data found</td></tr>
+            return <tr><td colSpan={3}>No data found</td></tr>
           }
        }else{
-          return <tr><td colSpan={4}>Accessing Data {loader}</td></tr>
+          return <tr><td colSpan={3}>Accessing Data {loader}</td></tr>
         }
     }
 
@@ -89,10 +86,9 @@ export default function Metadata(props) {
     function setModeInsert(){
         setId(0);
         setName("");
-        setAddress("");
         setModeUsulan("tambah");
         setFormVisible(true);
-        setTombolUsulan("Submit");
+        setTombolUsulan("Save");
     }
 
     function setModeEdit(r){
@@ -101,7 +97,6 @@ export default function Metadata(props) {
         //setKodeMisi(1);
         //setKodeBidang(1);
         setName(r.name);
-        setAddress(r.csw);
         
         setModeUsulan("ubah");
         setFormVisible(true);
@@ -112,7 +107,6 @@ export default function Metadata(props) {
     function setModeDelete(r){
         setId(r.id);
         setName(r.name);
-        setAddress(r.csw);
 
         setModeUsulan("hapus");
         setFormVisible(true);
@@ -128,21 +122,18 @@ export default function Metadata(props) {
         setError('d-block alert-info');
         //console.log(loader);
         err.innerHTML = 'please wait..';
-        
+
 
         try {
           // Fetch data from REST API
-          var metadataFile = document.getElementById('metadataFile'); //document.querySelector("#proposalFile");
-    
-          const formData = new FormData();
-          formData.append('file', metadataFile.files[0]);
-          
           const requestOptions = {
             method: 'POST',
             headers: { 
+                'Content-Type': 'application/json',
                 'Authorization': token 
             },
-            body: formData
+            body: JSON.stringify({ 
+                "name": name             })
           };
 
           const response = await fetch (url_insert, requestOptions)
@@ -160,7 +151,6 @@ export default function Metadata(props) {
                 load_usulan();
                 setId(0);
                 setName("");
-                setAddress("");
                 setFormVisible(false);
            }else{
             setError('d-block alert-danger')  
@@ -197,8 +187,7 @@ export default function Metadata(props) {
             },
             body: JSON.stringify({ 
                 "id": id,
-                "name": name,
-                "csw": address
+                "name": name
              })
             };
 
@@ -220,7 +209,6 @@ export default function Metadata(props) {
                 load_usulan();
                 setId(0);
                 setName("");
-                setAddress("");
                 setFormVisible(false);
           }else{
             setError('d-block alert-danger')  
@@ -277,7 +265,6 @@ export default function Metadata(props) {
                     load_usulan();
                     setId(0);
                     setName("");
-                    setAddress("");
                     setFormVisible(false);
           }else{
             setError('d-block alert-danger')  
@@ -340,22 +327,6 @@ export default function Metadata(props) {
         }
     },[token, url_list]);
 
-    function onFileChange(event) {
-
-        // Update the state
-        setLabelMetadata(event.target.files[0].name)
-        //console.log(event.target.files[0])
-        //console.log(event.target)
-        //var a = document.getElementsByClassName('custom-file-label');
-        //console.log(a);
-        //if(typeof (event.target.files[0].name) !== 'undefined')
-        //    a[0].innerHTML = event.target.files[0].name
-        //else
-        //    a[0].innerHTML = 'Upload File'
-
-
-    }
-
 
 
     const loader = <img className="logo d-inline" alt="logo" src={image_loader} width="30px" />
@@ -364,15 +335,13 @@ export default function Metadata(props) {
             <Card className={tabel}>
                 <Card.Body>
                     <Alert variant="warning">
-                        <span className="text-uppercase"><b>List of Metadata</b></span>
+                        <span className="text-uppercase"><b>List of Keywords</b></span>
                     </Alert>
                     <Table bordered className="font-11" size="sm">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th width="45%">Metadata File</th>
-                                <th width="20%">Time Uploaded</th>
-                                <th width="20%">Status</th>
+                                <th width="10%">Keywords</th>
                                 <th width="10%">Action</th>
                             </tr>
                         </thead>
@@ -389,7 +358,7 @@ export default function Metadata(props) {
                         </button>
                     </Alert>
                     <Form.Group>
-                        <Button variant="success" type="button" block onClick={() => setModeInsert()} className="font-11 py-0" size="sm">Upload a new metadata</Button>
+                        <Button variant="success" type="button" block onClick={() => setModeInsert()} className="font-11 py-0" size="sm">Add a new keyword</Button>
                     </Form.Group>
 
                 </Card.Body>
@@ -397,23 +366,13 @@ export default function Metadata(props) {
             <Card className={status} id="#form_isian">
                 <Card.Body>
                     <Alert variant="warning">
-                        <span className="text-uppercase"><b>Metadata form</b></span>
+                        <span className="text-uppercase"><b>Keywords form</b></span>
                     </Alert>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                            <Form.File
-                                id="metadataFile"
-                                label={labelMetadata}
-                                custom
-                                onChange={(e)=> onFileChange(e)}
-                                disabled={modeUsulan==="hapus"}
-                            />
-                        {
-                            // onChange={(e)=> onFileChange(e)}
-                        }          
-
+                            <Form.Label>Keywords</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="text" value={name} onChange={e => setName(e.target.value)} disabled={modeUsulan==="hapus"} />
                         </Form.Group>
-                      
 
                         <Alert className={error}>
                             <span id="error" className="font-11">message</span>
@@ -430,7 +389,7 @@ export default function Metadata(props) {
                             </Col>
                             <Col>
                                 <Form.Group>
-                                    <Button variant="success" type="submit" block className="font-11 py-0" size="sm">{tombolUsulan} Metadata</Button>
+                                    <Button variant="success" type="submit" block disabled={!validateForm()} className="font-11 py-0" size="sm" title="Keywords name field must be inserted">{tombolUsulan} Keywords</Button>
                                 </Form.Group>
                             </Col>
                         </Form.Row>
