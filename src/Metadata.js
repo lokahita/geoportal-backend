@@ -10,10 +10,11 @@ import {PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel} f
 import image_loader from './loading.gif';
 import Config from './config.json';
 
+import { getCookie } from './Helpers';
 
 export default function Metadata(props) {
     const [loading, setloading] = useState(true);
-    const  token = localStorage.getItem('ADMIN_TOKEN');
+    const  token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
     const url_list = Config.api_domain + "/metadata/";
@@ -28,6 +29,7 @@ export default function Metadata(props) {
     const [id, setId] = useState(0);
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
+    const [statusMetadata, setStatusMetadata] = useState(false);
     const [items, setItems] = useState();
     const [labelMetadata, setLabelMetadata] = useState("Upload metadata file");
     
@@ -53,7 +55,7 @@ export default function Metadata(props) {
             
                return items.map((row, index)=>{
                 //console.log(row.id, index)
-                var status = 'Approved by admin'
+                var status = row.status? 'Approved by admin': 'Need approval';
                 return <tr key={index}><td>{index+1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                 })
                }else{
@@ -413,6 +415,13 @@ export default function Metadata(props) {
                         }          
 
                         </Form.Group>
+                        <Form.Label>Select Status</Form.Label>
+                                    <Form.Control size="sm" as="select" className="font-11" value={statusMetadata} onChange={e => setStatusMetadata(e.target.value)} >
+                                       <option value="false">Need approval</option>
+                                       <option value="true">Approved by Admin</option>
+                                    </Form.Control>
+                        <Form.Group>
+                       </Form.Group>
                       
 
                         <Alert className={error}>

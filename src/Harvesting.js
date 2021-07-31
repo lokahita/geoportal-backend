@@ -10,11 +10,11 @@ import { PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel }
 import image_loader from './loading.gif';
 import Config from './config.json';
 
-
+import { getCookie } from './Helpers';
 export default function Harvestings(props) {
     const [loading, setloading] = useState(true);
 
-    const token = localStorage.getItem('ADMIN_TOKEN');
+    const token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
 
     const url_list = Config.api_domain + "/harvestings/";
@@ -68,7 +68,8 @@ export default function Harvestings(props) {
         //console.log(typeof dataAll[0].organizations.id);
         var result = dataAll.filter(p => p.organizations.id === parseInt(id));
         console.log(result);
-        setItems(result.slice(0, 10));//.slice(0, 10));
+        setItems(result);
+       // setItems(result.slice(0, 10));//.slice(0, 10));
         setNumberData(result.length);
     }
 
@@ -278,7 +279,8 @@ export default function Harvestings(props) {
                 } else {
                     setDataAll(data.data);
                     setNumberData(data.data.length);
-                    setItems(data.data.slice(0, 10));
+                    setItems(data.data);
+                    //setItems(data.data.slice(0, 10));
                 }
             }
         })

@@ -10,10 +10,10 @@ import {PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel} f
 import image_loader from './loading.gif';
 import Config from './config.json';
 
-
+import { getCookie } from './Helpers';
 export default function Organizations(props) {
     const [loading, setloading] = useState(true);
-    const  token = localStorage.getItem('ADMIN_TOKEN');
+    const  token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
     const url_list = Config.api_domain + "/organizations/";

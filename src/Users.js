@@ -10,10 +10,10 @@ import {PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel} f
 import image_loader from './loading.gif';
 import Config from './config.json';
 
-
+import { getCookie } from './Helpers';
 export default function Users(props) {
     const [loading, setloading] = useState(true);
-    const  token = localStorage.getItem('ADMIN_TOKEN');
+    const  token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
     const url_list = Config.api_domain + "/user/";
@@ -26,7 +26,11 @@ export default function Users(props) {
     const [tombolUsulan, setTombolUsulan] = useState("Save");    
     
     const [id, setId] = useState(0);
-    const [name, setName] = useState("");
+    const [fullname, setFullname] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [password2, setPassword2] = useState("");
     const [items, setItems] = useState();
     
     const [alert, setAlert] = useState("d-none");
@@ -38,7 +42,7 @@ export default function Users(props) {
    
     function validateForm() {
         //console.log(wilayahId)
-        return name.length > 0;
+        return username.length > 0 && fullname.length > 0 && email.length > 0 && password === password2;
     }
 
       
@@ -51,12 +55,12 @@ export default function Users(props) {
                return items.map((row, index)=>{
                 //console.log(row.id, index)
                 // 
-                return <tr key={index}><td>{index+1}</td><td>{row.name}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                return <tr key={index}><td>{index+1}</td><td>{row.fullname}</td><td>{row.username}</td><td>{row.email}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                 })
                }else{
-                //return <tr><td colSpan={3}>No data found</td></tr>
+                return <tr><td colSpan={3}>No data found</td></tr>
 
-                return <tr><td>1</td><td>emhayusa</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit()} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete()} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>    
+                //return <tr><td>1</td><td>emhayusa</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit()} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete()} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>    
                }
           }else{
             return <tr><td colSpan={3}>No data found</td></tr>
@@ -87,7 +91,9 @@ export default function Users(props) {
 
     function setModeInsert(){
         setId(0);
-        setName("");
+        setUsername("");
+        setFullname("");
+        setEmail("");
         setModeUsulan("tambah");
         setFormVisible(true);
         setTombolUsulan("Save");
@@ -95,11 +101,12 @@ export default function Users(props) {
 
     function setModeEdit(r){
         console.log(r);
-        setId(r.id);
+        setId(r.public_id);
         //setKodeMisi(1);
         //setKodeBidang(1);
-        setName(r.name);
-        
+        setUsername(r.username);
+        setFullname(r.fullname);
+        setEmail(r.email);
         setModeUsulan("ubah");
         setFormVisible(true);
         setTombolUsulan("Update");
@@ -107,9 +114,10 @@ export default function Users(props) {
     }
 
     function setModeDelete(r){
-        setId(r.id);
-        setName(r.name);
-
+        setId(r.public_id);
+        setUsername(r.username);
+        setFullname(r.fullname);
+        setEmail(r.email);
         setModeUsulan("hapus");
         setFormVisible(true);
         setTombolUsulan("Delete");
@@ -135,9 +143,12 @@ export default function Users(props) {
                 'Authorization': token 
             },
             body: JSON.stringify({ 
-                "name": name             })
+                "fullname": fullname,
+                "email": email,
+                "username": username,
+                "password": password
+            })
           };
-
           const response = await fetch (url_insert, requestOptions)
           //console.log(response)
     
@@ -152,7 +163,11 @@ export default function Users(props) {
                 msg.innerHTML = json.message;
                 load_usulan();
                 setId(0);
-                setName("");
+                setUsername("");
+                setFullname("");
+                setEmail("");
+                setPassword("");
+                setPassword2("");
                 setFormVisible(false);
            }else{
             setError('d-block alert-danger')  
@@ -189,7 +204,10 @@ export default function Users(props) {
             },
             body: JSON.stringify({ 
                 "id": id,
-                "name": name
+                "username": username,
+                "fullname": fullname,
+                "email": email,
+                "password": password
              })
             };
 
@@ -210,7 +228,11 @@ export default function Users(props) {
                 msg.innerHTML = json.message;
                 load_usulan();
                 setId(0);
-                setName("");
+                setUsername("");
+                setFullname("");
+                setEmail("");
+                setPassword("");
+                setPassword2("");
                 setFormVisible(false);
           }else{
             setError('d-block alert-danger')  
@@ -245,7 +267,7 @@ export default function Users(props) {
                 'Authorization': token 
             },
             body: JSON.stringify({ 
-                "id": id             
+                "public_id": id             
             })
           };
 
@@ -266,7 +288,11 @@ export default function Users(props) {
                     msg.innerHTML = json.message;
                     load_usulan();
                     setId(0);
-                    setName("");
+                    setUsername("");
+                    setFullname("");
+                    setEmail("");
+                    setPassword("");
+                    setPassword2("");
                     setFormVisible(false);
           }else{
             setError('d-block alert-danger')  
@@ -343,7 +369,9 @@ export default function Users(props) {
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th width="10%">Username</th>
+                                <th width="20%">Fullname</th>
+                                <th width="20%">Username</th>
+                                <th width="20%">Email</th>
                                 <th width="10%">Action</th>
                             </tr>
                         </thead>
@@ -372,10 +400,25 @@ export default function Users(props) {
                     </Alert>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control size="sm" className="font-11" type="text" value={name} onChange={e => setName(e.target.value)} disabled={modeUsulan==="hapus"} />
+                            <Form.Label>Fullname</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="text" value={fullname} onChange={e => setFullname(e.target.value)} disabled={modeUsulan==="hapus"} />
                         </Form.Group>
-
+                        <Form.Group>
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="email" value={email} onChange={e => setEmail(e.target.value)} disabled={modeUsulan==="hapus"} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="text" value={username} onChange={e => setUsername(e.target.value)} disabled={modeUsulan==="hapus"} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="password" value={password} onChange={e => setPassword(e.target.value)} disabled={modeUsulan==="hapus"} />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Repeat Password</Form.Label>
+                            <Form.Control size="sm" className="font-11" type="password" value={password2} onChange={e => setPassword2(e.target.value)} disabled={modeUsulan==="hapus"} />
+                        </Form.Group>
                         <Alert className={error}>
                             <span id="error" className="font-11">message</span>
                             <button type="button" className="close pt-0" aria-label="Close" onClick={() => setError('d-none')}>

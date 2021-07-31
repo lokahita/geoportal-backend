@@ -20,9 +20,16 @@ export default function Analytics(props) {
         title: {
             text: 'User Activity'
         },
+        xAxis: {
+            categories: ['emhayusa'],
+            title: {
+                text: 'username'
+            }
+        },
         series: [
             {
-                data: [1, 2, 1, 4, 3, 6]
+                name: 'User Login',
+                data: [10]
             }
         ]
     };
@@ -36,7 +43,7 @@ export default function Analytics(props) {
             text: 'Harvesting Metadata Distribution'
         },
         xAxis: {
-            categories: [110, 80, 97],
+            categories: ['ICRAF', 'Cifor', 'Internal'],
             title: {
                 text: 'Organization'
             }
@@ -54,11 +61,11 @@ export default function Analytics(props) {
         series: [
             {
                 name: 'the amount of metadata',
-                data: [500, 350, 657]
+                data: [2132, 69, 0]
             }
         ]
     };
-
+/*
     const options3 = {
         chart: {
             type: 'line',
@@ -108,7 +115,7 @@ export default function Analytics(props) {
         ]
     };
 
-
+*/
 
     return (
         <Row className="mx-3">
@@ -118,12 +125,17 @@ export default function Analytics(props) {
             <Col lg={6} className="mt-5 mb-4">
                 <HighchartsReact highcharts={Highcharts} options={options2} />
             </Col>
+            {
+            
+            /*
             <Col lg={6} className="mt-2 mb-2">
                 <HighchartsReact highcharts={Highcharts} options={options3} />
             </Col>
             <Col lg={6} className="mt-2 mb-2">
                 <HighchartsReact highcharts={Highcharts} options={options4} />
             </Col>
+            */
+            }
         </Row>
 
     )

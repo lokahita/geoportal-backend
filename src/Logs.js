@@ -9,14 +9,14 @@ import { setCookie } from './Helpers';
 import {PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel} from 'react-bootstrap-icons';
 import image_loader from './loading.gif';
 import Config from './config.json';
-
+import { getCookie } from './Helpers';
 
 export default function Logs(props) {
     const [loading, setloading] = useState(true);
-    const  token = localStorage.getItem('ADMIN_TOKEN');
+    const  token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
-    const url_list = Config.api_domain + "/user/";
+    const url_list = Config.api_domain + "/statistic/";
     const url_insert = Config.api_domain + "/user/";
     const url_update = Config.api_domain + "/user/update/";
     const url_delete = Config.api_domain + "/user/delete/";
@@ -54,14 +54,14 @@ export default function Logs(props) {
                 return <tr key={index}><td>{index+1}</td><td>{row.name}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                 })
                }else{
-                return <tr><td>1</td><td>2021-07-19T12:25:42.309399</td><td>2221</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit()} size="sm" className="px-1 py-0" ><Download size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete()} className="px-1 py-0" ><Trash size={12} /></Button></td></tr> 
-                //return <tr><td colSpan={3}>No data found</td></tr>                   
+                //return <tr><td>1</td><td>2021-07-19T12:25:42.309399</td><td>2221</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit()} size="sm" className="px-1 py-0" ><Download size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete()} className="px-1 py-0" ><Trash size={12} /></Button></td></tr> 
+                return <tr><td colSpan={4}>No data found</td></tr>                   
                }
           }else{
-            return <tr><td colSpan={3}>No data found</td></tr>
+            return <tr><td colSpan={4}>No data found</td></tr>
           }
        }else{
-          return <tr><td colSpan={3}>Accessing Data {loader}</td></tr>
+          return <tr><td colSpan={4}>Accessing Data {loader}</td></tr>
         }
     }
 
@@ -336,7 +336,7 @@ export default function Logs(props) {
             <Card className={tabel}>
                 <Card.Body>
                     <Alert variant="warning">
-                        <span className="text-uppercase"><b>List of Keywords</b></span>
+                        <span className="text-uppercase"><b>List of Logs</b></span>
                     </Alert>
                     <Table bordered className="font-11" size="sm">
                         <thead>
