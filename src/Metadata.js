@@ -56,7 +56,7 @@ export default function Metadata(props) {
                return items.map((row, index)=>{
                 //console.log(row.id, index)
                 var status = row.status? 'Approved by admin': 'Need approval';
-                return <tr key={index}><td>{index+1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                return <tr key={index}><td>{index+1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{row.users.username}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                 })
                }else{
                 return <tr><td colSpan={4}>No data found</td></tr>                   
@@ -366,14 +366,15 @@ export default function Metadata(props) {
             <Card className={tabel}>
                 <Card.Body>
                     <Alert variant="warning">
-                        <span className="text-uppercase"><b>List of Metadata</b></span>
+                        <span className="text-uppercase"><b>List of Metadata [Internal Catalogue]</b></span>
                     </Alert>
                     <Table bordered className="font-11" size="sm">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
-                                <th width="45%">Metadata File</th>
+                                <th width="25%">Metadata File</th>
                                 <th width="20%">Time Uploaded</th>
+                                <th width="20%">Username</th>
                                 <th width="20%">Status</th>
                                 <th width="10%">Action</th>
                             </tr>
