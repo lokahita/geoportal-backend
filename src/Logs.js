@@ -16,31 +16,18 @@ export default function Logs(props) {
     const  token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
     
-    const url_list = Config.api_domain + "/statistic/";
-    const url_insert = Config.api_domain + "/user/";
-    const url_update = Config.api_domain + "/user/update/";
-    const url_delete = Config.api_domain + "/user/delete/";
+    const url_list = Config.api_domain + "/logs/";
+    const url_download = Config.api_domain + "/logs/download/";
+   
     
-    const [isFormVisible, setFormVisible] = useState(false);
-    const [modeUsulan, setModeUsulan] = useState("tambah");
-    const [tombolUsulan, setTombolUsulan] = useState("Save");    
+    const [isFormVisible, setFormVisible] = useState(false); 
     
-    const [id, setId] = useState(0);
     const [name, setName] = useState("");
     const [items, setItems] = useState();
-    
-    const [alert, setAlert] = useState("d-none");
-    const [error, setError] = useState("d-none");
-
-    const status = isFormVisible ? 'main-card mt-3 d-block' : 'd-none';
+  
     const tabel = !isFormVisible ? 'main-card d-block' : 'd-none';
 
    
-    function validateForm() {
-        //console.log(wilayahId)
-        return name.length > 0;
-    }
-
       
     function getRowsData () {
         if (typeof(items) !== 'undefined'){
@@ -51,7 +38,7 @@ export default function Logs(props) {
                return items.map((row, index)=>{
                 //console.log(row.id, index)
                 // 
-                return <tr key={index}><td>{index+1}</td><td>{row.name}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                return <tr key={index}><td>{index+1}</td><td>{row.time}</td><td>{row.organization}</td><td>{row.total}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>download(row)} size="sm" className="px-1 py-0" ><Download size={12} /></Button></td></tr>
                 })
                }else{
                 //return <tr><td>1</td><td>2021-07-19T12:25:42.309399</td><td>2221</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit()} size="sm" className="px-1 py-0" ><Download size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete()} className="px-1 py-0" ><Trash size={12} /></Button></td></tr> 
@@ -65,238 +52,12 @@ export default function Logs(props) {
         }
     }
 
-    function load_usulan(){
-        const requestOptions = {
-            method: 'GET',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-        };
-
-        fetch(url_list, requestOptions).then(res => res.json()).then(data => {
-            if(data.status === "Expired token"){
-                window.location.replace(Config.base_domain)
-            }else{
-                console.log(data);
-                setItems(data.data);
-            }
-        });
+   
+    function download(r){
+        //console.log(url_download+r.file)
+        window.open(url_download+r.file)
     }
-
-    function setModeInsert(){
-        setId(0);
-        setName("");
-        setModeUsulan("tambah");
-        setFormVisible(true);
-        setTombolUsulan("Save");
-    }
-
-    function setModeEdit(r){
-        console.log(r);
-        setId(r.id);
-        //setKodeMisi(1);
-        //setKodeBidang(1);
-        setName(r.name);
-        
-        setModeUsulan("ubah");
-        setFormVisible(true);
-        setTombolUsulan("Update");
-        //window.scrollBy(0, 150);
-    }
-
-    function setModeDelete(r){
-        setId(r.id);
-        setName(r.name);
-
-        setModeUsulan("hapus");
-        setFormVisible(true);
-        setTombolUsulan("Delete");
-        //window.scrollBy(0, 150);
-    }
-
-    const tambahData = async () => {
-         
-        //var btn = document.querySelector("#ulangi");
-        var msg = document.querySelector("#message");
-        var err = document.querySelector("#error");
-        setError('d-block alert-info');
-        //console.log(loader);
-        err.innerHTML = 'please wait..';
-
-
-        try {
-          // Fetch data from REST API
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-            body: JSON.stringify({ 
-                "name": name             })
-          };
-
-          const response = await fetch (url_insert, requestOptions)
-          //console.log(response)
     
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-        
-          if (response.status === 201) {
-            //console.log(data);
-               setAlert('d-block alert-success')
-                setError('d-none')
-                msg.innerHTML = json.message;
-                load_usulan();
-                setId(0);
-                setName("");
-                setFormVisible(false);
-           }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
-        }catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
-        }
-    };
-
-    
-    const ubahData = async () => {
-         
-           
-        //var btn = document.querySelector("#ulangi");
-        var msg = document.querySelector("#message");
-        var err = document.querySelector("#error");
-        setError('d-block alert-info');
-        //console.log(loader);
-        err.innerHTML = 'please wait..';
-
-        try {
-          // Fetch data from REST API
-          
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-            body: JSON.stringify({ 
-                "id": id,
-                "name": name
-             })
-            };
-
-          const response = await fetch (url_update , requestOptions)
-          //console.log(response)
-    
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-         
-          
-          //msg.innerHTML = json.data.status;
-        
-          if (response.status === 201) {
-            //console.log(data);
-                setAlert('d-block alert-success')
-                setError('d-none')
-                msg.innerHTML = json.message;
-                load_usulan();
-                setId(0);
-                setName("");
-                setFormVisible(false);
-          }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
-        } catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
-        }
-    
-    };
-
-    const hapusData = async () => {
-         
-        //var btn = document.querySelector("#ulangi");
-        var msg = document.querySelector("#message");
-        var err = document.querySelector("#error");
-        setError('d-block alert-info');
-        //console.log(loader);
-        err.innerHTML = 'please wait ..';
-
-
-        try {
-
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-            body: JSON.stringify({ 
-                "id": id             
-            })
-          };
-
-          const response = await fetch (url_delete, requestOptions)
-          //console.log(response)
-    
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-         
-          
-          //msg.innerHTML = json.data.status;
-        
-          if (response.status === 201) {
-            //console.log(data);
-                    setAlert('d-block alert-success')
-                    setError('d-none')
-                    msg.innerHTML = json.message;
-                    load_usulan();
-                    setId(0);
-                    setName("");
-                    setFormVisible(false);
-          }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
-        } catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
-        }
-    
-    };
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        if(modeUsulan === 'tambah')
-            tambahData();
-        else if(modeUsulan === 'ubah')
-            ubahData();
-        else if(modeUsulan === 'hapus')
-            hapusData();
-    }
-
-    
-    
-    function muatUlang(event) {
-        window.location.reload();
-    }
-
 
     useEffect(()=>{
 
@@ -343,6 +104,7 @@ export default function Logs(props) {
                             <tr>
                                 <th width="5%">No</th>
                                 <th width="10%">Time Harvesting</th>
+                                <th width="10%">Organization</th>
                                 <th width="10%">Total</th>
                                 <th width="10%">Action</th>
                             </tr>
