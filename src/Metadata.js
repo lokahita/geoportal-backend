@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useState, useEffect } from 'react';
 import { setCookie } from './Helpers';
-import {PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel} from 'react-bootstrap-icons';
+import { PencilSquare, Trash, Printer, Download, ArrowRepeat, FileEarmarkExcel } from 'react-bootstrap-icons';
 import image_loader from './loading.gif';
 import Config from './config.json';
 
@@ -14,108 +14,109 @@ import { getCookie } from './Helpers';
 
 export default function Metadata(props) {
     const [loading, setloading] = useState(true);
-    const  token = getCookie('ADMIN_TOKEN');
+    const token = getCookie('ADMIN_TOKEN');
     //const base_domain = Config.base_domain;
-    
+
     const url_list = Config.api_domain + "/metadata/";
     const url_insert = Config.api_domain + "/metadata/";
-    const url_update = Config.api_domain + "/metadata/update/";
+    const url_update = Config.api_domain + "/metadata/updateAdmin/";
     const url_delete = Config.api_domain + "/metadata/delete/";
-    
+
     const [isFormVisible, setFormVisible] = useState(false);
     const [modeUsulan, setModeUsulan] = useState("tambah");
-    const [tombolUsulan, setTombolUsulan] = useState("Submit");    
-    
+    const [tombolUsulan, setTombolUsulan] = useState("Submit");
+
     const [id, setId] = useState(0);
-    const [name, setName] = useState("");
-    const [address, setAddress] = useState("");
+    const [filename, setFilename] = useState("");
     const [statusMetadata, setStatusMetadata] = useState(false);
     const [items, setItems] = useState();
     const [labelMetadata, setLabelMetadata] = useState("Upload metadata file");
-    
+
     const [alert, setAlert] = useState("d-none");
     const [error, setError] = useState("d-none");
 
     const status = isFormVisible ? 'main-card mt-3 d-block' : 'd-none';
     const tabel = !isFormVisible ? 'main-card d-block' : 'd-none';
-          
 
-   
+
+
     function validateForm() {
         //console.log(wilayahId)
-        return name.length > 0 && address.length > 0;
+        if (modeUsulan === "hapus")
+            return true
+        else
+            return labelMetadata;
     }
 
-      
-    function getRowsData () {
-        if (typeof(items) !== 'undefined'){
-          //var items=props.presensiDataLast.data;
-          if(items !== null){
-               if(items.length >0){
-            
-               return items.map((row, index)=>{
-                //console.log(row.id, index)
-                var status = row.status? 'Approved by admin': 'Need approval';
-                return <tr key={index}><td>{index+1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{row.users.username}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={()=>setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
-                })
-               }else{
-                return <tr><td colSpan={4}>No data found</td></tr>                   
-               }
-          }else{
-            return <tr><td colSpan={4}>No data found</td></tr>
-          }
-       }else{
-          return <tr><td colSpan={4}>Accessing Data {loader}</td></tr>
+
+    function getRowsData() {
+        if (typeof (items) !== 'undefined') {
+            //var items=props.presensiDataLast.data;
+            if (items !== null) {
+                if (items.length > 0) {
+
+                    return items.map((row, index) => {
+                        //console.log(row.id, index)
+                        var status = row.status ? 'Approved by admin' : 'Need approval';
+                        return <tr key={index}><td>{index + 1}</td><td>{row.filename}</td><td>{row.time_uploaded}</td><td>{row.users.username}</td><td>{status}</td><td> <Button type="submit" variant="warning" size="sm" inline="true" onClick={() => setModeEdit(row)} size="sm" className="px-1 py-0" ><PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={() => setModeDelete(row)} className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                    })
+                } else {
+                    return <tr><td colSpan={4}>No data found</td></tr>
+                }
+            } else {
+                return <tr><td colSpan={4}>No data found</td></tr>
+            }
+        } else {
+            return <tr><td colSpan={4}>Accessing Data {loader}</td></tr>
         }
     }
 
-    function load_usulan(){
+    function load_usulan() {
         const requestOptions = {
             method: 'GET',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': token 
+                'Authorization': token
             },
         };
 
         fetch(url_list, requestOptions).then(res => res.json()).then(data => {
-            if(data.status === "Expired token"){
+            if (data.status === "Expired token") {
                 window.location.replace(Config.base_domain)
-            }else{
+            } else {
                 console.log(data);
                 setItems(data.data);
             }
         });
     }
 
-    function setModeInsert(){
+    function setModeInsert() {
         setId(0);
-        setName("");
-        setAddress("");
+        setLabelMetadata("Upload metadata file");
+        setStatusMetadata("insert");
         setModeUsulan("tambah");
         setFormVisible(true);
         setTombolUsulan("Submit");
     }
 
-    function setModeEdit(r){
+    function setModeEdit(r) {
         console.log(r);
         setId(r.id);
         //setKodeMisi(1);
         //setKodeBidang(1);
-        setName(r.name);
-        setAddress(r.csw);
-        
+        setLabelMetadata(r.filename);
+        setStatusMetadata(r.status);
+
         setModeUsulan("ubah");
         setFormVisible(true);
         setTombolUsulan("Update");
         //window.scrollBy(0, 150);
     }
 
-    function setModeDelete(r){
+    function setModeDelete(r) {
         setId(r.id);
-        setName(r.name);
-        setAddress(r.csw);
-
+        setLabelMetadata(r.filename);
+        setStatusMetadata(r.status);
         setModeUsulan("hapus");
         setFormVisible(true);
         setTombolUsulan("Delete");
@@ -123,64 +124,7 @@ export default function Metadata(props) {
     }
 
     const tambahData = async () => {
-         
-        //var btn = document.querySelector("#ulangi");
-        var msg = document.querySelector("#message");
-        var err = document.querySelector("#error");
-        setError('d-block alert-info');
-        //console.log(loader);
-        err.innerHTML = 'please wait..';
-        
 
-        try {
-          // Fetch data from REST API
-          var metadataFile = document.getElementById('metadataFile'); //document.querySelector("#proposalFile");
-    
-          const formData = new FormData();
-          formData.append('file', metadataFile.files[0]);
-          
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Authorization': token 
-            },
-            body: formData
-          };
-
-          const response = await fetch (url_insert, requestOptions)
-          //console.log(response)
-    
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-        
-          if (response.status === 201) {
-            //console.log(data);
-               setAlert('d-block alert-success')
-                setError('d-none')
-                msg.innerHTML = json.message;
-                load_usulan();
-                setId(0);
-                setName("");
-                setAddress("");
-                setFormVisible(false);
-           }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
-        }catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
-        }
-    };
-
-    
-    const ubahData = async () => {
-         
-           
         //var btn = document.querySelector("#ulangi");
         var msg = document.querySelector("#message");
         var err = document.querySelector("#error");
@@ -188,58 +132,112 @@ export default function Metadata(props) {
         //console.log(loader);
         err.innerHTML = 'please wait..';
 
+
         try {
-          // Fetch data from REST API
-          
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-            body: JSON.stringify({ 
-                "id": id,
-                "name": name,
-                "csw": address
-             })
+            // Fetch data from REST API
+            var metadataFile = document.getElementById('metadataFile'); //document.querySelector("#proposalFile");
+
+            const formData = new FormData();
+            formData.append('file', metadataFile.files[0]);
+            formData.append('username', 'admin');
+            formData.append('statusMetadata', statusMetadata)
+
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Authorization': token
+                },
+                body: formData
             };
 
-          const response = await fetch (url_update , requestOptions)
-          //console.log(response)
-    
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-         
-          
-          //msg.innerHTML = json.data.status;
-        
-          if (response.status === 201) {
-            //console.log(data);
+            const response = await fetch(url_insert, requestOptions)
+            //console.log(response)
+
+            var json = await response.json();
+            //console.log(json);
+            //console.log(json.status);
+
+            if (response.status === 201) {
+                //console.log(data);
                 setAlert('d-block alert-success')
                 setError('d-none')
                 msg.innerHTML = json.message;
                 load_usulan();
                 setId(0);
-                setName("");
-                setAddress("");
                 setFormVisible(false);
-          }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
+            } else {
+                setError('d-block alert-danger')
+                err.innerHTML = `Error ${response.status} ${response.statusText}`;
+                console.error(`Error ${response.status} ${response.statusText}`);
+            }
+
         } catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
+            setError('d-block alert-danger')
+            msg.innerHTML = `Error ${error}`;
+            console.error(`Error ${error}`);
         }
-    
+    };
+
+
+    const ubahData = async () => {
+
+
+        //var btn = document.querySelector("#ulangi");
+        var msg = document.querySelector("#message");
+        var err = document.querySelector("#error");
+        setError('d-block alert-info');
+        //console.log(loader);
+        err.innerHTML = 'please wait..';
+
+        try {
+            // Fetch data from REST API
+
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    "id": id,
+                    "statusMetadata": statusMetadata     
+                })
+            };
+
+            const response = await fetch(url_update, requestOptions)
+            //console.log(response)
+
+            var json = await response.json();
+            //console.log(json);
+            //console.log(json.status);
+
+
+            //msg.innerHTML = json.data.status;
+
+            if (response.status === 201) {
+                //console.log(data);
+                setAlert('d-block alert-success')
+                setError('d-none')
+                msg.innerHTML = json.message;
+                load_usulan();
+                setId(0);
+                setFormVisible(false);
+            } else {
+                setError('d-block alert-danger')
+                err.innerHTML = `Error ${response.status} ${response.statusText}`;
+                console.error(`Error ${response.status} ${response.statusText}`);
+            }
+
+        } catch (error) {
+            setError('d-block alert-danger')
+            msg.innerHTML = `Error ${error}`;
+            console.error(`Error ${error}`);
+        }
+
     };
 
     const hapusData = async () => {
-         
+
         //var btn = document.querySelector("#ulangi");
         var msg = document.querySelector("#message");
         var err = document.querySelector("#error");
@@ -250,88 +248,86 @@ export default function Metadata(props) {
 
         try {
 
-          const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token 
-            },
-            body: JSON.stringify({ 
-                "id": id             
-            })
-          };
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({
+                    "id": id
+                })
+            };
 
-          const response = await fetch (url_delete, requestOptions)
-          //console.log(response)
-    
-          var json = await response.json();
-          //console.log(json);
-          //console.log(json.status);
-         
-          
-          //msg.innerHTML = json.data.status;
-        
-          if (response.status === 201) {
-            //console.log(data);
-                    setAlert('d-block alert-success')
-                    setError('d-none')
-                    msg.innerHTML = json.message;
-                    load_usulan();
-                    setId(0);
-                    setName("");
-                    setAddress("");
-                    setFormVisible(false);
-          }else{
-            setError('d-block alert-danger')  
-            err.innerHTML = `Error ${response.status} ${response.statusText}`;
-            console.error(`Error ${response.status} ${response.statusText}`);
-          }
-          
+            const response = await fetch(url_delete, requestOptions)
+            //console.log(response)
+
+            var json = await response.json();
+            //console.log(json);
+            //console.log(json.status);
+
+
+            //msg.innerHTML = json.data.status;
+
+            if (response.status === 201) {
+                //console.log(data);
+                setAlert('d-block alert-success')
+                setError('d-none')
+                msg.innerHTML = json.message;
+                load_usulan();
+                setId(0);
+                setFormVisible(false);
+            } else {
+                setError('d-block alert-danger')
+                err.innerHTML = `Error ${response.status} ${response.statusText}`;
+                console.error(`Error ${response.status} ${response.statusText}`);
+            }
+
         } catch (error) {
-          setError('d-block alert-danger')
-          msg.innerHTML = `Error ${error}`;
-          console.error(`Error ${error}`);
+            setError('d-block alert-danger')
+            msg.innerHTML = `Error ${error}`;
+            console.error(`Error ${error}`);
         }
-    
+
     };
 
     function handleSubmit(event) {
         event.preventDefault();
-        if(modeUsulan === 'tambah')
+        if (modeUsulan === 'tambah')
             tambahData();
-        else if(modeUsulan === 'ubah')
+        else if (modeUsulan === 'ubah')
             ubahData();
-        else if(modeUsulan === 'hapus')
+        else if (modeUsulan === 'hapus')
             hapusData();
     }
 
-    
-    
+
+
     function muatUlang(event) {
         window.location.reload();
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
 
         let mounted = true;
-       
+
         const requestOptions = {
             method: 'GET',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': token 
+                'Authorization': token
             },
         };
 
         fetch(url_list, requestOptions).then(res => res.json()).then(data => {
             if (mounted) {
                 setloading(false)
-                if(data.status === "Expired token"){
+                if (data.status === "Expired token") {
                     //console.log("aaa")
                     //props.setLogout()
-                    window.location.replace(Config.base_domain) 
-                }else{
+                    window.location.replace(Config.base_domain)
+                } else {
                     setItems(data.data);
                 }
             }
@@ -340,7 +336,7 @@ export default function Metadata(props) {
         return function cleanup() {
             mounted = false;
         }
-    },[token, url_list]);
+    }, [token, url_list]);
 
     function onFileChange(event) {
 
@@ -408,22 +404,22 @@ export default function Metadata(props) {
                                 id="metadataFile"
                                 label={labelMetadata}
                                 custom
-                                onChange={(e)=> onFileChange(e)}
-                                disabled={modeUsulan==="hapus"}
+                                onChange={(e) => onFileChange(e)}
+                                disabled={modeUsulan === "hapus" || modeUsulan === "ubah"}
                             />
-                        {
-                            // onChange={(e)=> onFileChange(e)}
-                        }          
+                            {
+                                // onChange={(e)=> onFileChange(e)}
+                            }
 
                         </Form.Group>
                         <Form.Label>Select Status</Form.Label>
-                                    <Form.Control size="sm" as="select" className="font-11" value={statusMetadata} onChange={e => setStatusMetadata(e.target.value)} >
-                                       <option value="false">Need approval</option>
-                                       <option value="true">Approved by Admin</option>
-                                    </Form.Control>
+                        <Form.Control size="sm" as="select" className="font-11" value={statusMetadata} onChange={e => setStatusMetadata(e.target.value)} disabled={modeUsulan === "hapus"}>
+                            <option value="false">Need approval</option>
+                            <option value="true">Approved by Admin</option>
+                        </Form.Control>
                         <Form.Group>
-                       </Form.Group>
-                      
+                        </Form.Group>
+
 
                         <Alert className={error}>
                             <span id="error" className="font-11">message</span>
@@ -450,7 +446,7 @@ export default function Metadata(props) {
         </>
 
     )
-    return loading? loader: card   
+    return loading ? loader : card
 }
 
 /*
