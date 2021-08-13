@@ -28,7 +28,7 @@ export default function Harvestings(props) {
 
     const [isFormVisible, setFormVisible] = useState(false);
     const [modeUsulan, setModeUsulan] = useState("tambah");
-    const [tombolUsulan, setTombolUsulan] = useState("Redo");
+    const [tombolUsulan, setTombolUsulan] = useState("Re");
 
     const [id, setId] = useState(0);
     const [identifier, setIdentifier] = useState("");
@@ -83,7 +83,7 @@ export default function Harvestings(props) {
                     return items.map((row, index) => {
                         //console.log(row.id, index)
                         // <PencilSquare size={12} /></Button> <Button type="submit" variant="danger" size="sm" onClick={()=>setModeDelete(row)} className="px-1 py-0" >
-                        return <tr key={index}><td>{index + 1}</td><td>{row.identifier}</td><td>{row.title}</td><td>{row.organizations.name}</td><td>{row.modified}</td><td> <Button type="submit" variant="danger" size="sm" inline="true" onClick={() => setModeDelete(row)} size="sm" className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
+                        return <tr key={index}><td>{index + 1}</td><td>{row.identifier}</td><td>{row.title}</td><td>{row.organizations.name}</td><td>{row.publication_date}</td><td> <Button type="submit" variant="danger" size="sm" inline="true" onClick={() => setModeDelete(row)} size="sm" className="px-1 py-0" ><Trash size={12} /></Button></td></tr>
                     })
                 } else {
                     return <tr><td colSpan={6}>No data found</td></tr>
@@ -121,7 +121,7 @@ export default function Harvestings(props) {
         setTitle("");
         setModeUsulan("tambah");
         setFormVisible(true);
-        setTombolUsulan("Redo");
+        setTombolUsulan("Re");
     }
 
     function setModeDelete(r) {
@@ -166,10 +166,11 @@ export default function Harvestings(props) {
                 setAlert('d-block alert-success')
                 setError('d-none')
                 msg.innerHTML = json.status + ', total: ' + json.total + ' data';
-                load_usulan();
+                //load_usulan();
                 setId(0);
                 setIdentifier("");
                 setTitle("");
+                load_organizations(idOrganization);
                 setFormVisible(false);
             } else {
                 setError('d-block alert-danger')
@@ -363,7 +364,7 @@ export default function Harvestings(props) {
                                 <th width="20%">Title</th>
                                 <th width="20%">Organization
                                 </th>
-                                <th width="15%">Modified</th>
+                                <th width="15%">Publication Date</th>
                                 <th width="10%">Action</th>
                             </tr>
                         </thead>
